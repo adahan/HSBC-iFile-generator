@@ -1,0 +1,4 @@
+IFH,IFILE,CSV,YourHsbcConnectId,YourHsbcId,20200425X1,2020/04/24,12:22:34,P,1.0,4
+BATHDR,ACH-CR,2,,,,,,,@1ST@,20200425,YourBankAccountNo,HKD,3000.0,,,,,,,YourCompanyName,YourAddress,,,,O01,DefaultReference
+SECPTY,12345678,PAYEE A,X0,001,100,,1000,,DefaultReference,,,,,N,N
+SECPTY,87654321,PAYEE B,X1,004,200,,2000,,payeeRefB,,,,,N,N
