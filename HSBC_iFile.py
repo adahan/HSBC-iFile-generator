@@ -13,6 +13,8 @@ from datetime import datetime, timedelta
 import tkinter as tk
 from tkinter import messagebox
 import os, shutil
+#from zipfile import ZipFile
+import pyminizip
 
 
 # In[ ]:
@@ -24,11 +26,11 @@ import os, shutil
 # In[ ]:
 
 
-HSBCConnectID_default='YourHsbcConnectId'
-HSBCID_default='YourHsbcId'
-Account_default='YourBankAccountNo'
-FPName_default = 'YourCompanyName'
-FPAddress_default = 'YourAddress'
+HSBCConnectID_default='ABC22448001'
+HSBCID_default='SGHBAPGSG052007432'
+Account_default='741208219001'
+FPName_default = 'APRIL Hong Kong Limited'
+FPAddress_default = '1-13 Hollywood Road 9/F Central'
 
 #columns
 xlsxCol = ['Name', 'BankID', 'BranchNo', 'AccountNo', 'Amount', 'Reference']
@@ -41,7 +43,7 @@ xlsxSet = set(xlsxCol)
 #defaultValues
 NumExec_default = '1'
 Currency_default = 'HKD'
-ReferenceExec_default = 'DefaultReference'
+ReferenceExec_default = 'Payroll'
 DateExec_default = (datetime.today()+timedelta(days=1)).strftime("%Y%m%d")
 
 
@@ -103,8 +105,8 @@ def getExcelWithDateNum(date,num):
         return None
 
 def makeDataFromSheet(sheet):
-    data=[]
-    totals={'line':2,'amount':0}
+    #data=[]
+    totals={'line':2,'bLine':0,'amount':0}
     xlsxLocation = {}
     
     cols=set(sheet[0].keys())
@@ -113,10 +115,11 @@ def makeDataFromSheet(sheet):
         messagebox.showinfo("Excel Column Format Error", "Missing : "+str(diff))
         return []
     
-    dictio = {}
+    #dictio = {}
     for i, row in enumerate(sheet):
         totals['amount']+=float(row['Amount'])
         totals['line']+=1
+        totals['bLine']+=1
         row['ID']='X'+str(i)
         row['BankID'] = row['BankID'].zfill(3)
         row['BranchNo'] = row['BranchNo'].zfill(3)
@@ -139,7 +142,7 @@ def makeDataFromSheet(sheet):
 def makeString(data, totals, ref, date, num):
     iString = ""
     iString+=genHeader(totals['line'], date, num)
-    iString+=genBathLine(ref, totals['amount'], date, num)
+    iString+=genBathLine(ref, totals['amount'], totals['bLine'], date, num)
     for row in data:
         iString+=genSecLine(row, ref)
     return iString
@@ -164,9 +167,9 @@ def genHeader(totalLine, date, num):
 
 #genHeader(4, dateExec, numExec)
 
-def genBathLine(ref, totalValue, date, num):
+def genBathLine(ref, totalValue, bLines, date, num):
     #reference=date+'X'+str(num)
-    return 'BATHDR,ACH-CR,2,,,,,,,@1ST@,'+date+','+Account+','+Currency+','+str(totalValue)+',,,,,,,'+FPName+','+FPAddress+',,,,O0'+str(num)+','+ref+'\n'
+    return 'BATHDR,ACH-CR,'+str(bLines)+',,,,,,,@1ST@,'+date+','+Account+','+Currency+','+str(totalValue)+',,,,,,,'+FPName+','+FPAddress+',,,,O0'+str(num)+','+ref+'\n'
 
 #genBathLine(referenceExec, 2000, dateExec, numExec)
 
@@ -175,7 +178,6 @@ def genSecLine(row, refDefault):
     return 'SECPTY,'+row['AccountNo']+','+row['Name']+','+row['ID']+','+row['BankID']+','+row['BranchNo']+',,'+str(row['Amount'])+',,'+ref+',,,,,N,N'+'\n'
 
 #genSecLine(data[0], referenceExec)
-
 
 # In[ ]:
 
